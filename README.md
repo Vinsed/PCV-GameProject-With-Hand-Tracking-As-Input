@@ -118,7 +118,7 @@ Pipeline deteksi gesture:
 | M7 | Selesai | Prototype Tower Bloxx dengan stacking dan scoring dasar |
 | M15 | Selesai | Sprite gedung, heart HP, score system, perfect streak, dan game over |
 | M15 | Selesai | Background parallax city-cloud-space dan kamera scroll halus |
-| M15 | Perlu dilengkapi | Screenshot game dan link video demonstrasi di repository |
+| M15 | To be added | Dokumentasi screenshot dan video demonstrasi |
 
 ## Hasil Akhir
 
@@ -137,33 +137,31 @@ Fitur yang sudah tersedia:
 - Background bertahap dari kota ke awan lalu luar angkasa.
 - Asset gedung dari folder `assets/buildings`.
 
-Dokumentasi final repository sebaiknya dilengkapi dengan:
-
-- Screenshot gameplay di folder `screenshots/`.
-- Link video demonstrasi.
-- Source code utama `Skyscraper.py` dan modul tracking `tracking.py`.
+Dokumentasi: To be added.
 
 ## Struktur File
 
-- `Skyscraper.py`: file utama berisi game loop, rendering, stacking, scoring,
-  HP, background, dan integrasi tracking.
-- `tracking.py`: modul tracking warna biru berisi HSV masking, morfologi manual,
-  contour selection, smoothing, dan gesture recognition.
-- `heart.png` atau `assets/heart.png`: sprite heart untuk tampilan HP.
-- `assets/buildings/`: folder sprite gedung.
+```text
+webcam-tower-bloxx/
+|-- assets/
+|   `-- buildings/
+|       |-- blue_first_floor.jpg
+|       |-- blue_upper_floor.jpg
+|       |-- red_first_floor.jpg
+|       |-- red_upper_floor.jpg
+|       |-- green_first_floor.jpg
+|       |-- green_upper_floor.jpg
+|       |-- brown_first_floor.jpg
+|       `-- brown_upper_floor.jpg
+|-- docs/
+|   `-- screenshots/
+|-- heart.png
+|-- Skyscraper.py
+|-- tracking.py
+`-- README.md
+```
 
-Nama asset gedung yang didukung:
-
-- `blue_first_floor.jpg`
-- `blue_upper_floor.jpg`
-- `red_first_floor.jpg`
-- `red_upper_floor.jpg`
-- `green_first_floor.jpg`
-- `green_upper_floor.jpg`
-- `brown_first_floor.jpg`
-- `brown_upper_floor.jpg`
-
-File `.png` atau `.jpeg` dengan nama yang sama juga bisa dipakai.
+Dokumentasi: To be added.
 
 ## Catatan Kalibrasi
 
