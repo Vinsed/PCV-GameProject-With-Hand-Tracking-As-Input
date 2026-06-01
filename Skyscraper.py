@@ -3,6 +3,7 @@ import os
 import cv2
 import numpy as np
 
+from audio_manager import SoundPlayer
 from tracking import BlueTracker
 
 
@@ -156,10 +157,11 @@ def draw_fallback_heart(frame, x, y, size):
 
 
 class SkyscraperGame:
-    def __init__(self, frame_width, frame_height, best_score=0):
+    def __init__(self, frame_width, frame_height, best_score=0, sound_player=None):
         self.frame_width = frame_width
         self.frame_height = frame_height
         self.best = best_score
+        self.sound_player = sound_player
         self.heart_image = self.load_heart_image()
         self.building_sprites = self.load_floor_style_building_sprites()
         self.reset(best_score)
@@ -363,6 +365,9 @@ class SkyscraperGame:
         return perfect, points
 
     def lose_hp(self):
+        if self.sound_player is not None:
+            self.sound_player.play_effect("drop")
+
         self.hp = max(0, self.hp - 1)
         self.perfect_streak = 0
         self.last_award_text = "Block fell! -1 HP"
@@ -403,6 +408,9 @@ class SkyscraperGame:
         score_block = placed_block.copy()
         score_block["x"] = landed_x
         perfect, _ = self.add_success_score(score_block, target_x)
+        if self.sound_player is not None:
+            self.sound_player.play_effect("drop-perfect" if perfect else "drop")
+
         self.scroll_tower_if_needed()
         self.active = self.make_block()
         if perfect:
@@ -783,6 +791,8 @@ def main():
     cv2.resizeWindow("Skyscraper", WINDOW_WIDTH, WINDOW_HEIGHT)
     cv2.namedWindow("BLUE MASK", cv2.WINDOW_NORMAL)
     cv2.resizeWindow("BLUE MASK", WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
+    sound_player = SoundPlayer()
+    sound_player.play_bgm()
     tracker = BlueTracker()
     game = None
 
@@ -796,7 +806,7 @@ def main():
         height, width = frame.shape[:2]
 
         if game is None:
-            game = SkyscraperGame(width, height)
+            game = SkyscraperGame(width, height, sound_player=sound_player)
 
         detection = tracker.detect(frame)
         if detection["contours"]:
@@ -826,6 +836,7 @@ def main():
             break
 
     cap.release()
+    sound_player.stop_all()
     cv2.destroyAllWindows()
 
 

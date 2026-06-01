@@ -22,8 +22,9 @@ release di bagian atas layar, lalu membuka pinch untuk menjatuhkan blok ke atas
 tower. Tujuan game adalah membuat tower setinggi mungkin.
 
 Game ini tidak menggunakan game engine atau framework game. Seluruh tampilan,
-input webcam, deteksi gesture, rendering sprite, scoring, HP, dan background
-dibuat langsung menggunakan OpenCV dan NumPy.
+input webcam, deteksi gesture, rendering sprite, scoring, HP, audio, dan
+background dibuat langsung menggunakan OpenCV, NumPy, dan library standar
+Python.
 
 Fitur utama:
 
@@ -35,6 +36,7 @@ Fitur utama:
 - Tower stacking dengan collision berbasis overlap horizontal.
 - Score system dengan `Success`, `Perfect`, dan perfect streak bonus.
 - HP system menggunakan sprite heart.
+- BGM dan sound effect untuk drop biasa dan perfect landing.
 - Background parallax bertahap dari city, cloud layer, sampai space.
 
 ## Dependencies
@@ -49,6 +51,9 @@ Install dependency:
 ```bash
 pip install opencv-python numpy
 ```
+
+Audio memakai Windows MCI melalui library standar Python, jadi tidak perlu
+install package audio tambahan.
 
 ## Cara Build dan Run Project
 
@@ -118,6 +123,7 @@ Pipeline deteksi gesture:
 | M7 | Selesai | Prototype Tower Bloxx dengan stacking dan scoring dasar |
 | M15 | Selesai | Sprite gedung, heart HP, score system, perfect streak, dan game over |
 | M15 | Selesai | Background parallax city-cloud-space dan kamera scroll halus |
+| M15 | Selesai | BGM dan sound effect dari folder `assets/sound` |
 | M15 | To be added | Dokumentasi screenshot dan video demonstrasi |
 
 ## Hasil Akhir
@@ -134,6 +140,7 @@ Fitur yang sudah tersedia:
 - Stackable building block.
 - Second object berupa blok bangunan/sprite gedung.
 - Score, floor counter, HP heart, dan game over.
+- BGM, drop sound, dan perfect drop sound.
 - Background bertahap dari kota ke awan lalu luar angkasa.
 - Asset gedung dari folder `assets/buildings`.
 
@@ -144,18 +151,23 @@ Dokumentasi: To be added.
 ```text
 webcam-tower-bloxx/
 |-- assets/
-|   `-- buildings/
-|       |-- blue_first_floor.jpg
-|       |-- blue_upper_floor.jpg
-|       |-- red_first_floor.jpg
-|       |-- red_upper_floor.jpg
-|       |-- green_first_floor.jpg
-|       |-- green_upper_floor.jpg
-|       |-- brown_first_floor.jpg
-|       `-- brown_upper_floor.jpg
+|   |-- buildings/
+|   |   |-- blue_first_floor.jpg
+|   |   |-- blue_upper_floor.jpg
+|   |   |-- red_first_floor.jpg
+|   |   |-- red_upper_floor.jpg
+|   |   |-- green_first_floor.jpg
+|   |   |-- green_upper_floor.jpg
+|   |   |-- brown_first_floor.jpg
+|   |   `-- brown_upper_floor.jpg
+|   `-- sound/
+|       |-- bgm.mp3
+|       |-- drop.mp3
+|       `-- drop-perfect.mp3
 |-- docs/
 |   `-- screenshots/
 |-- heart.png
+|-- audio_manager.py
 |-- Skyscraper.py
 |-- tracking.py
 `-- README.md
