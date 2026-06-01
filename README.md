@@ -1,90 +1,205 @@
 # Webcam Tower Bloxx
 
-Project ini memakai Python, OpenCV, dan NumPy untuk membuat mini game bergaya
-Tower Bloxx. Pemain memakai objek/sarung tangan warna biru sebagai titik pinch
-untuk mengambil blok bangunan, membawa blok ke zona release di bagian atas
-layar, lalu menjatuhkannya ke atas tower. Tujuannya adalah membuat tower
-setinggi mungkin.
+## Daftar Isi
 
-## Input dan Deteksi
+- [Overview](#overview)
+- [Dependencies](#dependencies)
+- [Cara Build dan Run Project](#cara-build-dan-run-project)
+- [Kontrol](#kontrol)
+- [Aturan Game](#aturan-game)
+- [Input dan Deteksi](#input-dan-deteksi)
+- [Progress](#progress)
+- [Hasil Akhir](#hasil-akhir)
+- [Struktur File](#struktur-file)
+- [Catatan Kalibrasi](#catatan-kalibrasi)
 
-- Kamera dibaca memakai `cv2.VideoCapture(0)`.
-- Frame diproses dalam ruang warna HSV.
-- Objek biru dideteksi dari rentang `H`, `S`, dan `V` pada HSV.
-- Deteksi dilakukan pada seluruh frame kamera.
-- Mask juga diperketat dengan dominasi channel biru pada BGR agar warna lain
-  tidak mudah ikut terdeteksi.
-- Mask biner dibuat manual memakai operasi array NumPy.
-- Noise dibersihkan dengan operasi morfologi manual:
-  - Opening: erosi lalu dilasi.
-  - Closing: dilasi lalu erosi.
-- Contour terbesar yang memenuhi batas area dianggap sebagai objek biru.
-- Titik pusat objek biru dihitung memakai distance transform pada contour
-  terpilih.
-- Titik pusat distabilkan dengan smoothing adaptif agar tidak terlalu bergetar.
+## Overview
 
-## Gameplay
+Project ini adalah mini game bergaya Tower Bloxx yang dikembangkan dengan
+Python, OpenCV, dan NumPy. Pemain menggunakan sarung tangan atau objek berwarna
+biru sebagai input gesture untuk mengambil blok bangunan, membawa blok ke zona
+release di bagian atas layar, lalu membuka pinch untuk menjatuhkan blok ke atas
+tower. Tujuan game adalah membuat tower setinggi mungkin.
 
-- Sentuhkan titik biru ke blok yang berada di sisi bawah layar untuk melakukan
-  pinch/grab.
-- Saat blok sudah terpegang, gerakkan objek biru ke zona hijau di bagian atas.
-- Blok hanya bisa release di zona atas. Ketika titik biru masuk zona tersebut,
-  blok otomatis jatuh.
-- Blok berhasil menumpuk jika overlap horizontal dengan tower cukup besar.
-- Skor `Height` bertambah setiap blok berhasil ditumpuk.
-- Jika blok meleset terlalu jauh, game over.
+Game ini tidak menggunakan game engine atau framework game. Seluruh tampilan,
+input webcam, deteksi gesture, rendering sprite, scoring, HP, dan background
+dibuat langsung menggunakan OpenCV dan NumPy.
+
+Fitur utama:
+
+- Webcam real-time menggunakan `cv2.VideoCapture`.
+- Deteksi objek biru menggunakan HSV color masking.
+- Manipulasi mask biner menggunakan operasi array NumPy.
+- Morfologi manual: opening dan closing.
+- Gesture recognition untuk membedakan kondisi `pinch` dan `open`.
+- Tower stacking dengan collision berbasis overlap horizontal.
+- Score system dengan `Success`, `Perfect`, dan perfect streak bonus.
+- HP system menggunakan sprite heart.
+- Background parallax bertahap dari city, cloud layer, sampai space.
+
+## Dependencies
+
+- Python 3.10 atau lebih baru
+- OpenCV Python
+- NumPy
+- Webcam laptop atau kamera eksternal
+
+Install dependency:
+
+```bash
+pip install opencv-python numpy
+```
+
+## Cara Build dan Run Project
+
+Project Python ini tidak perlu proses compile seperti C++/SFML. Ikuti langkah
+berikut untuk menjalankan game:
+
+1. Pastikan Python, OpenCV, dan NumPy sudah terpasang.
+2. Clone atau download repository ini ke komputer.
+3. Pastikan webcam laptop aktif dan tidak sedang dipakai aplikasi lain.
+4. Jalankan game dari terminal:
+
+   ```bash
+   python Skyscraper.py
+   ```
+
+5. Jendela `Skyscraper` akan menampilkan game, sedangkan jendela `BLUE MASK`
+   menampilkan hasil segmentasi warna biru.
 
 ## Kontrol
 
-- `q`: keluar dari game.
-- `r`: restart setelah game over.
+| Input | Fungsi |
+|-------|--------|
+| Sarung tangan/objek biru | Input utama tracking gesture |
+| Pinch dua jari di atas blok | Mengambil blok bangunan |
+| Tahan pinch | Menggerakkan blok mengikuti posisi jari |
+| Buka pinch di `TOP RELEASE ZONE` | Melepas blok agar jatuh |
+| **R** | Restart setelah game over |
+| **Q** | Keluar dari game |
 
-## Menjalankan
+## Aturan Game
 
-```bash
-python Skyscraper.py
-```
+- Pemain mulai dengan 3 HP, ditampilkan sebagai heart di pojok kanan bawah.
+- Jika blok jatuh atau meleset dari tower, pemain kehilangan 1 HP.
+- Game over terjadi ketika HP habis.
+- Blok berhasil ditumpuk jika overlap horizontal dengan tower cukup besar.
+- Jika landing tidak sejajar tetapi overlap masih cukup, blok tetap ditumpuk
+  utuh tanpa memotong bagian yang menggantung.
+- Setiap blok yang berhasil ditumpuk dihitung sebagai 1 floor.
+- `Success` memberi 25 poin.
+- `Perfect` memberi 50 poin jika posisi blok sangat sejajar dengan blok
+  sebelumnya.
+- Perfect beruntun memberi bonus tambahan 25 poin per streak. Contoh: Perfect
+  pertama 50 poin, Perfect kedua 75 poin, Perfect ketiga 100 poin.
 
-Tekan `q` untuk keluar dari jendela kamera.
+## Input dan Deteksi
+
+Pipeline deteksi gesture:
+
+1. Kamera dibaca memakai `cv2.VideoCapture(0)`.
+2. Frame diproses dalam ruang warna HSV.
+3. Objek biru dideteksi dari rentang `H`, `S`, dan `V`.
+4. Mask diperketat dengan dominasi channel biru pada BGR agar warna lain tidak
+   mudah ikut terdeteksi.
+5. Mask biner dibuat memakai operasi array NumPy.
+6. Noise dibersihkan dengan opening dan closing manual.
+7. Contour biru terbesar yang memenuhi batas area dianggap sebagai objek input.
+8. Titik kontrol dihitung dari area celah/jepitan di antara jari.
+9. Gesture `open` dideteksi saat sisi depan contour memiliki celah berbentuk C.
+10. Gesture `pinch` dideteksi saat celah tersebut hilang atau terlalu kecil.
+
+## Progress
+
+| Tahap | Status | Keterangan |
+|-------|--------|------------|
+| M7 | Selesai | Webcam input, HSV masking, morfologi manual, dan tracking objek biru |
+| M7 | Selesai | Gesture `pinch` dan `open` untuk mengambil/melepas blok |
+| M7 | Selesai | Prototype Tower Bloxx dengan stacking dan scoring dasar |
+| M15 | Selesai | Sprite gedung, heart HP, score system, perfect streak, dan game over |
+| M15 | Selesai | Background parallax city-cloud-space dan kamera scroll halus |
+| M15 | Perlu dilengkapi | Screenshot game dan link video demonstrasi di repository |
+
+## Hasil Akhir
+
+Hasil akhir project adalah mini game `Skyscraper` berbasis webcam. Pemain
+menggunakan gesture pinch dari sarung tangan/objek biru untuk menyusun blok
+bangunan setinggi mungkin.
+
+Fitur yang sudah tersedia:
+
+- Real-time camera input.
+- Blue glove tracking.
+- Gesture detection.
+- Stackable building block.
+- Second object berupa blok bangunan/sprite gedung.
+- Score, floor counter, HP heart, dan game over.
+- Background bertahap dari kota ke awan lalu luar angkasa.
+- Asset gedung dari folder `assets/buildings`.
+
+Dokumentasi final repository sebaiknya dilengkapi dengan:
+
+- Screenshot gameplay di folder `screenshots/`.
+- Link video demonstrasi.
+- Source code utama `Skyscraper.py` dan modul tracking `tracking.py`.
 
 ## Struktur File
 
-- `Skyscraper.py`: file utama berisi logic Tower Bloxx, scoring, rendering
-  game, webcam loop, kontrol keyboard, dan import tracking.
-- `tracking.py`: modul tracking warna biru berisi mask NumPy, morfologi manual,
-  contour selection, dan smoothing titik tracking.
+- `Skyscraper.py`: file utama berisi game loop, rendering, stacking, scoring,
+  HP, background, dan integrasi tracking.
+- `tracking.py`: modul tracking warna biru berisi HSV masking, morfologi manual,
+  contour selection, smoothing, dan gesture recognition.
+- `heart.png` atau `assets/heart.png`: sprite heart untuk tampilan HP.
+- `assets/buildings/`: folder sprite gedung.
+
+Nama asset gedung yang didukung:
+
+- `blue_first_floor.jpg`
+- `blue_upper_floor.jpg`
+- `red_first_floor.jpg`
+- `red_upper_floor.jpg`
+- `green_first_floor.jpg`
+- `green_upper_floor.jpg`
+- `brown_first_floor.jpg`
+- `brown_upper_floor.jpg`
+
+File `.png` atau `.jpeg` dengan nama yang sama juga bisa dipakai.
 
 ## Catatan Kalibrasi
 
-Jika objek biru belum terdeteksi stabil, ubah nilai berikut di
-`tracking.py`:
+Jika objek biru belum terdeteksi stabil, ubah nilai berikut di `tracking.py`:
 
 - `BLUE_HUE_MIN` dan `BLUE_HUE_MAX`: rentang warna biru pada HSV OpenCV.
-- `BLUE_SATURATION_MIN`: semakin kecil nilainya, biru pucat lebih mudah
+- `BLUE_SATURATION_MIN`: semakin kecil, biru pucat lebih mudah terdeteksi.
+- `BLUE_VALUE_MIN`: semakin kecil, biru pada kondisi gelap lebih mudah
   terdeteksi.
-- `BLUE_VALUE_MIN`: semakin kecil nilainya, biru pada kondisi gelap lebih mudah
-  terdeteksi.
-- `BLUE_OVER_GREEN_MIN` dan `BLUE_OVER_RED_MIN`: semakin besar nilainya,
-  deteksi makin ketat ke warna biru.
-- `MIN_BLUE_AREA`: semakin besar nilainya, semakin ketat filter ukuran objek.
+- `BLUE_OVER_GREEN_MIN` dan `BLUE_OVER_RED_MIN`: semakin besar, deteksi makin
+  ketat ke warna biru.
+- `MIN_BLUE_AREA`: semakin besar, filter ukuran objek biru semakin ketat.
 - `MAX_BLUE_AREA_RATIO`: membatasi contour terlalu besar agar background biru
-  tidak dipilih sebagai objek.
+  tidak dipilih sebagai input.
 - `OPEN_KERNEL_SIZE`: membersihkan noise kecil.
-- `CLOSE_KERNEL_SIZE`: menutup lubang kecil. Jika terlalu besar, noise bisa
-  melebar, jadi nilai saat ini dibuat kecil.
-- `CENTER_SMOOTHING_ALPHA`: semakin kecil nilainya, titik pusat makin stabil
-  tetapi gerakannya lebih lambat mengikuti tangan.
-- `FAST_CENTER_SMOOTHING_ALPHA`: dipakai saat gerakan besar agar titik pusat
-  mengejar tangan lebih cepat.
-- `CENTER_DEADZONE_PIXELS`: perubahan kecil di bawah nilai ini diabaikan agar
-  titik pusat tidak bergetar.
-- `FAST_MOVEMENT_PIXELS`: batas jarak gerakan yang dianggap cepat.
-- `RADIUS_SMOOTHING_ALPHA`: menghaluskan perubahan ukuran lingkaran deteksi.
+- `CLOSE_KERNEL_SIZE`: menutup lubang kecil.
+- `CENTER_SMOOTHING_ALPHA`: semakin kecil, titik pusat makin stabil tetapi
+  gerakan lebih lambat mengikuti tangan.
+- `FAST_CENTER_SMOOTHING_ALPHA`: dipakai saat gerakan besar agar tracking lebih
+  responsif.
+- `CENTER_DEADZONE_PIXELS`: perubahan kecil diabaikan agar titik tidak bergetar.
+- `OPEN_GAP_SCAN_WIDTH_RATIO`: lebar area depan contour untuk mencari celah
+  gesture open.
+- `PINCH_FRONT_SCAN_WIDTH_RATIO`: fallback untuk mencari titik pinch saat game
+  langsung dimulai dalam kondisi pinch.
 
-Konstanta gameplay:
+Konstanta gameplay yang sering diubah ada di `Skyscraper.py`:
 
+- `WINDOW_WIDTH` dan `WINDOW_HEIGHT`: ukuran render game.
+- `BLOCK_WIDTH_RATIO`: ukuran lebar blok. Nilai saat ini dibuat sedikit lebih
+  kecil agar game terlihat lebih zoom out.
+- `BLOCK_SPAWN_X_RATIO` dan `BLOCK_SPAWN_TOP_OFFSET`: posisi awal blok baru.
 - `RELEASE_ZONE_RATIO`: tinggi zona release di bagian atas layar.
-- `PINCH_MARGIN_PIXELS`: toleransi jarak agar titik biru dapat mengambil blok.
-- `MIN_LANDING_OVERLAP_RATIO`: minimal overlap agar blok dianggap berhasil
-  menumpuk.
-- `DROP_GRAVITY` dan `DROP_MAX_SPEED`: kecepatan jatuh blok.
+- `PERFECT_ALIGNMENT_PIXELS`: toleransi alignment agar stack dianggap Perfect.
+- `MIN_LANDING_OVERLAP_RATIO`: minimal overlap agar blok dianggap berhasil.
+- `TOWER_SCROLL_MARGIN_RATIO`: posisi tower setelah kamera scroll.
+- `CAMERA_SCROLL_STEP_RATIO`: kecepatan scroll kamera bertahap.
+- `CLOUD_START_FLOOR` dan `CLOUD_FULL_FLOOR`: transisi city ke cloud.
+- `SPACE_START_FLOOR` dan `SPACE_FULL_FLOOR`: transisi cloud ke space.
