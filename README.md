@@ -119,13 +119,13 @@ Pipeline deteksi gesture:
 
 | Status | Keterangan |
 |--------|------------|
-| [x] | Webcam input, HSV masking, morfologi manual, dan tracking objek biru |
-| [x] | Gesture `pinch` dan `open` untuk mengambil/melepas blok |
-| [x] | Prototype Tower Bloxx dengan stacking dan scoring dasar |
-| [x] | Sprite gedung, heart HP, score system, perfect streak, dan game over |
-| [x] | Background parallax city-cloud-space dan kamera scroll halus |
-| [x] | BGM dan sound effect dari folder `assets/sound` |
-| [x] | Dokumentasi video demonstrasi langsung di README |
+ - [x] | Webcam input, HSV masking, morfologi manual, dan tracking objek biru |
+ - [x] | Gesture `pinch` dan `open` untuk mengambil/melepas blok |
+- [x] | Prototype Tower Bloxx dengan stacking dan scoring dasar |
+- [x] | Sprite gedung, heart HP, score system, perfect streak, dan game over |
+- [x] | Background parallax city-cloud-space dan kamera scroll halus |
+- [x] | BGM dan sound effect dari folder `assets/sound` |
+- [x] | Dokumentasi video demonstrasi langsung di README |
 
 ## Hasil Akhir
 
@@ -147,9 +147,7 @@ Fitur yang sudah tersedia:
 
 ## Dokumentasi Video
 
-<video src="Gameplay.mp4" controls width="720">
-  Browser atau markdown viewer tidak mendukung pemutar video.
-</video>
+https://github.com/user-attachments/assets/b479429e-4fc2-4952-a34f-24ac71f9cf7a
 
 Video demonstrasi disimpan sebagai `Gameplay.mp4` di root project agar bisa
 diputar langsung dari README.
