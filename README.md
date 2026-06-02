@@ -10,6 +10,7 @@
 - [Input dan Deteksi](#input-dan-deteksi)
 - [Progress](#progress)
 - [Hasil Akhir](#hasil-akhir)
+- [Dokumentasi Video](#dokumentasi-video)
 - [Struktur File](#struktur-file)
 - [Catatan Kalibrasi](#catatan-kalibrasi)
 
@@ -116,15 +117,15 @@ Pipeline deteksi gesture:
 
 ## Progress
 
-| Tahap | Status | Keterangan |
-|-------|--------|------------|
-| M7 | Selesai | Webcam input, HSV masking, morfologi manual, dan tracking objek biru |
-| M7 | Selesai | Gesture `pinch` dan `open` untuk mengambil/melepas blok |
-| M7 | Selesai | Prototype Tower Bloxx dengan stacking dan scoring dasar |
-| M15 | Selesai | Sprite gedung, heart HP, score system, perfect streak, dan game over |
-| M15 | Selesai | Background parallax city-cloud-space dan kamera scroll halus |
-| M15 | Selesai | BGM dan sound effect dari folder `assets/sound` |
-| M15 | To be added | Dokumentasi screenshot dan video demonstrasi |
+| Status | Keterangan |
+|--------|------------|
+| [x] | Webcam input, HSV masking, morfologi manual, dan tracking objek biru |
+| [x] | Gesture `pinch` dan `open` untuk mengambil/melepas blok |
+| [x] | Prototype Tower Bloxx dengan stacking dan scoring dasar |
+| [x] | Sprite gedung, heart HP, score system, perfect streak, dan game over |
+| [x] | Background parallax city-cloud-space dan kamera scroll halus |
+| [x] | BGM dan sound effect dari folder `assets/sound` |
+| [x] | Dokumentasi video demonstrasi langsung di README |
 
 ## Hasil Akhir
 
@@ -144,7 +145,14 @@ Fitur yang sudah tersedia:
 - Background bertahap dari kota ke awan lalu luar angkasa.
 - Asset gedung dari folder `assets/buildings`.
 
-Dokumentasi: To be added.
+## Dokumentasi Video
+
+<video src="Gameplay.mp4" controls width="720">
+  Browser atau markdown viewer tidak mendukung pemutar video.
+</video>
+
+Video demonstrasi disimpan sebagai `Gameplay.mp4` di root project agar bisa
+diputar langsung dari README.
 
 ## Struktur File
 
@@ -164,16 +172,13 @@ webcam-tower-bloxx/
 |       |-- bgm.mp3
 |       |-- drop.mp3
 |       `-- drop-perfect.mp3
-|-- docs/
-|   `-- screenshots/
+|-- Gameplay.mp4
 |-- heart.png
 |-- audio_manager.py
 |-- Skyscraper.py
 |-- tracking.py
 `-- README.md
 ```
-
-Dokumentasi: To be added.
 
 ## Catatan Kalibrasi
 
